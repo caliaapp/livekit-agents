@@ -57,6 +57,7 @@ EventTypes = Literal[
     "function_calls_collected",
     "function_calls_finished",
     "metrics_collected",
+    "transcript_completed",
 ]
 
 _CallContextVar = contextvars.ContextVar["AgentCallContext"](
@@ -631,6 +632,8 @@ class VoicePipelineAgent(utils.EventEmitter[EventTypes]):
                 # VAD can sometimes not detect that the human is speaking
                 # to make the interruption more reliable, we also interrupt on the final transcript.
                 self._interrupt_if_possible()
+
+            self.emit("transcript_completed", self._transcribed_text)
 
         self._human_input.on("start_of_speech", _on_start_of_speech)
         self._human_input.on("vad_inference_done", _on_vad_inference_done)
