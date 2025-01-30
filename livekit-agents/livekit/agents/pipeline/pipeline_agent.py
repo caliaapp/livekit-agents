@@ -202,6 +202,8 @@ class VoicePipelineAgent(utils.EventEmitter[EventTypes]):
         loop: asyncio.AbstractEventLoop | None = None,
         # backward compatibility
         will_synthesize_assistant_reply: WillSynthesizeAssistantReply | None = None,
+        calia_agent: Any = None,
+        job_ctx: Any | None  = None
     ) -> None:
         """
         Create a new VoicePipelineAgent.
@@ -310,10 +312,20 @@ class VoicePipelineAgent(utils.EventEmitter[EventTypes]):
 
         self._last_final_transcript_time: float | None = None
         self._last_speech_time: float | None = None
+        self._calia_agent: Any = calia_agent
+        self._job_ctx: Any | None = job_ctx
 
     @property
     def fnc_ctx(self) -> FunctionContext | None:
         return self._fnc_ctx
+
+    @property
+    def calia_agent(self) -> Any:
+        return self._calia_agent
+
+    @property
+    def job_ctx(self) -> Any | None:
+        return self._job_ctx
 
     @fnc_ctx.setter
     def fnc_ctx(self, fnc_ctx: FunctionContext | None) -> None:
