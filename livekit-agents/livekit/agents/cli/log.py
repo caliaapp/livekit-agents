@@ -2,13 +2,14 @@ from __future__ import annotations
 
 import json
 import logging
+from pathlib import Path
 import re
 import traceback
 from collections import OrderedDict
 from datetime import date, datetime, time, timezone
 from inspect import istraceback
 from typing import Any, Dict, Tuple
-
+import os
 from ..plugin import Plugin
 
 # noisy loggers are set to warn by default
@@ -142,7 +143,6 @@ class JsonFormatter(logging.Formatter):
 
         return json.dumps(log_record, cls=JsonFormatter.JsonEncoder, ensure_ascii=True)
 
-
 class ColoredFormatter(logging.Formatter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -202,20 +202,29 @@ class ColoredFormatter(logging.Formatter):
 
 def setup_logging(log_level: str, devmode: bool) -> None:
     handler = logging.StreamHandler()
+    dev_file_handler = logging.FileHandler("logs/debug.log")
+    prod_file_handler = logging.FileHandler("logs/app.log")
+
 
     if devmode:
         # colorful logs for dev (improves readability)
         colored_formatter = ColoredFormatter(
             "%(asctime)s - %(esc_levelcolor)s%(levelname)-4s%(esc_reset)s %(name)s - %(message)s %(esc_gray)s%(extra)s"
         )
+        json_formatter = JsonFormatter()
         handler.setFormatter(colored_formatter)
+        dev_file_handler.setFormatter(json_formatter)
     else:
         # production logs (serialized of json)
         json_formatter = JsonFormatter()
         handler.setFormatter(json_formatter)
+        prod_file_handler.setFormatter(json_formatter)
 
     root = logging.getLogger()
     root.addHandler(handler)
+    print("Añadiendo handler")
+    root.addHandler(prod_file_handler)
+    root.addHandler(dev_file_handler)
     root.setLevel(log_level)
 
     _silence_noisy_loggers()
