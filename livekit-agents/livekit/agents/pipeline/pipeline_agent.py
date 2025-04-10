@@ -203,7 +203,8 @@ class VoicePipelineAgent(utils.EventEmitter[EventTypes]):
         # backward compatibility
         will_synthesize_assistant_reply: WillSynthesizeAssistantReply | None = None,
         calia_agent: Any = None,
-        job_ctx: Any | None  = None,
+        db_session: Any = None,
+        job_ctx: Any | None = None,
         calia_call: Any = None,
     ) -> None:
         """
@@ -314,6 +315,7 @@ class VoicePipelineAgent(utils.EventEmitter[EventTypes]):
         self._last_final_transcript_time: float | None = None
         self._last_speech_time: float | None = None
         self._calia_agent: Any = calia_agent
+        self._db_session: Any = db_session
         self._calia_call: Any = calia_call
         self._job_ctx: Any | None = job_ctx
 
@@ -324,6 +326,10 @@ class VoicePipelineAgent(utils.EventEmitter[EventTypes]):
     @property
     def calia_agent(self) -> Any:
         return self._calia_agent
+
+    @property
+    def db_session(self) -> Any:
+        return self._db_session
 
     @property
     def calia_call(self) -> Any:
